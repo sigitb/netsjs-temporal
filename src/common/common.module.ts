@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { Global, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
@@ -8,6 +8,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { ErrorFilter } from './error.filter';
 import 'winston-daily-rotate-file';
 import * as path from 'path';
+import { AuthMiddleware } from './auth.middleware';
 
 @Global()
 @Module({
@@ -15,14 +16,14 @@ import * as path from 'path';
         WinstonModule.forRoot({
             format: winston.format.json(),
             transports: [
-                new winston.transports.DailyRotateFile({
-                    dirname: path.join(__dirname, '../logs'),
-                    filename: 'application-%DATE%.log',
-                    datePattern: 'YYYY-MM-DD',
-                    zippedArchive: true,
-                    maxSize: '20m',
-                    maxFiles: '14d'
-                  }),
+                // new winston.transports.DailyRotateFile({
+                //     dirname: path.join(__dirname, '../logs'),
+                //     filename: 'application-%DATE%.log',
+                //     datePattern: 'YYYY-MM-DD',
+                //     zippedArchive: true,
+                //     maxSize: '20m',
+                //     maxFiles: '14d'
+                //   }),
                 new winston.transports.Console()
             ],
         }),
@@ -36,4 +37,8 @@ import * as path from 'path';
     }],
     exports: [PrismaService, ValidationService],
 })
-export class CommonModule {}
+export class CommonModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(AuthMiddleware).forRoutes('/api/*')
+    }
+}
