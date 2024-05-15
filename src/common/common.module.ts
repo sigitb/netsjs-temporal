@@ -12,33 +12,49 @@ import { AuthMiddleware } from './auth.middleware';
 
 @Global()
 @Module({
-    imports: [
-        WinstonModule.forRoot({
-            format: winston.format.json(),
-            transports: [
-                // new winston.transports.DailyRotateFile({
-                //     dirname: path.join(__dirname, '../logs'),
-                //     filename: 'application-%DATE%.log',
-                //     datePattern: 'YYYY-MM-DD',
-                //     zippedArchive: true,
-                //     maxSize: '20m',
-                //     maxFiles: '14d'
-                //   }),
-                new winston.transports.Console()
-            ],
+  imports: [
+    WinstonModule.forRoot({
+      format: winston.format.combine(
+        winston.format.timestamp({
+          format: 'YYYY-MM-DD HH:mm:ss',
         }),
-        ConfigModule.forRoot({
-            isGlobal: true,
+        winston.format.json(),
+        winston.format.printf(({ timestamp, level, message }) => {
+          return JSON.stringify({
+            timestamp,
+            level,
+            message,
+          });
         }),
-    ],
-    providers: [PrismaService, ValidationService, {
-        provide: APP_FILTER,
-        useClass: ErrorFilter
-    }],
-    exports: [PrismaService, ValidationService],
+      ),
+      transports: [
+        // new winston.transports.DailyRotateFile({
+        //     dirname: path.join(__dirname, '../logs'),
+        //     filename: 'application-%DATE%.log',
+        //     datePattern: 'YYYY-MM-DD',
+        //     zippedArchive: true,
+        //     maxSize: '20m',
+        //     maxFiles: '14d'
+        //   }),
+        new winston.transports.Console(),
+      ],
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
+  providers: [
+    PrismaService,
+    ValidationService,
+    {
+      provide: APP_FILTER,
+      useClass: ErrorFilter,
+    },
+  ],
+  exports: [PrismaService, ValidationService],
 })
 export class CommonModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer.apply(AuthMiddleware).forRoutes('/api/*')
-    }
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes('/api/*');
+  }
 }
