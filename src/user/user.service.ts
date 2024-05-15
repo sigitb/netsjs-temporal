@@ -106,4 +106,20 @@ export class UserService{
             name: result.name
         }
     }
+
+    async logout(user: User) {
+        const result = await this.prismaService.user.update({
+            where: {
+                username: user.username
+            },
+            data: {
+                token: null
+            }
+        })
+
+        return {
+            username: result.username,
+            name: result.name
+        }
+    }
 }
