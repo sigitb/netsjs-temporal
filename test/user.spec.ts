@@ -26,6 +26,7 @@ describe('UserController', () => {
 
   describe('POST /api/users', () => {
     beforeEach(async () => {
+      await testService.deleteContact();
       await testService.deleteUser();
     });
 
@@ -73,6 +74,7 @@ describe('UserController', () => {
 
   describe('POST /api/users/login', () => {
     beforeEach(async () => {
+      await testService.deleteContact();
       await testService.deleteUser();
       await testService.createuser();
     });
@@ -106,6 +108,7 @@ describe('UserController', () => {
 
   describe('GET /api/users/current', () => {
     beforeEach(async () => {
+      await testService.deleteContact();
       await testService.deleteUser();
       await testService.createuser();
     });
@@ -130,6 +133,7 @@ describe('UserController', () => {
 
   describe('PATCH /api/users', () => {
     beforeEach(async () => {
+      await testService.deleteContact();
       await testService.deleteUser();
       await testService.createuser();
     });
@@ -186,6 +190,7 @@ describe('UserController', () => {
 
   describe('DELETE /api/users/current', () => {
     beforeEach(async () => {
+      await testService.deleteContact();
       await testService.deleteUser();
       await testService.createuser();
     });
@@ -249,6 +254,38 @@ describe('UserController', () => {
       expect(response.body.data.last_name).toBe('test');
       expect(response.body.data.email).toBe('test@gmail.com');
       expect(response.body.data.phone).toBe('038939332');
+    });
+  });
+  describe('GET /api/contacts', () => {
+    beforeEach(async () => {
+      await testService.deleteContact();
+      await testService.deleteUser();
+      await testService.createuser();
+      await testService.crateContact();
+    });
+
+    it('should be rejected if contact is not found', async () => {
+      const contact = await testService.getContact();
+      const response = await request(app.getHttpServer())
+        .get(`/api/contacts/${contact.id + 1}`)
+        .set('Authorization', 'test');
+
+      expect(response.status).toBe(404);
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should be able to get contact', async () => {
+      const contact = await testService.getContact();
+      const response = await request(app.getHttpServer())
+        .get(`/api/contacts/${contact.id}`)
+        .set('Authorization', 'test');
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.id).toBeDefined();
+      expect(response.body.data.first_name).toBe('test');
+      expect(response.body.data.last_name).toBe('test');
+      expect(response.body.data.email).toBe('test@gmail.com');
+      expect(response.body.data.phone).toBe('90909090');
     });
   });
 });
