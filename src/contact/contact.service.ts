@@ -4,8 +4,13 @@ import { PrismaService } from '../common/prisma.service';
 import { ValidationService } from '../common/validation.service';
 import { Logger } from 'winston';
 import { Contact, User } from '@prisma/client';
-import { ContactResponse, CreateContactRequest } from '../model/contact.model';
+import {
+  ContactResponse,
+  CreateContactRequest,
+  UpdateContactRequest,
+} from '../model/contact.model';
 import { ContactValidation } from './contact.validation';
+import { number } from 'zod';
 
 @Injectable()
 export class ContactService {
@@ -30,23 +35,30 @@ export class ContactService {
         ...{ username: user.username },
       },
     });
-    return this.toContactResponse(contact)
+    return this.toContactResponse(contact);
   }
 
-  async get(user: User, contactId: number): Promise<ContactResponse>{
-    const contact = await this.prismaService.contact.findFirst({
+  async get(user: User, contactId: number): Promise<ContactResponse> {
+    const contact = await this.checkContactMustExists(user.username, contactId);
+    return this.toContactResponse(contact);
+  }
+
+  async update(user: User, request: UpdateContactRequest): Promise<ContactResponse> {
+    const updateRequest = this.validationService.validate(ContactValidation.UPDATE, request)
+    let contact = await this.checkContactMustExists(user.username, updateRequest.id);
+
+    contact = await this.prismaService.contact.update({
       where: {
-        id: contactId,
-        username: user.username
-      }
+        id: contact.id,
+        username: contact.username
+      },
+      data: updateRequest
     })
-    if (!contact) {
-      throw new HttpException('Contact is not found',404)
-    }
-    return this.toContactResponse(contact)
+
+    return this.toContactResponse(contact);
   }
 
-  toContactResponse(contact: Contact): ContactResponse{
+  toContactResponse(contact: Contact): ContactResponse {
     return {
       id: contact.id,
       first_name: contact.first_name,
@@ -54,5 +66,21 @@ export class ContactService {
       email: contact.email,
       phone: contact.phone,
     };
+  }
+
+  async checkContactMustExists(
+    username: string,
+    contactId: number,
+  ): Promise<Contact> {
+    const contact = await this.prismaService.contact.findFirst({
+      where: {
+        id: contactId,
+        username: username,
+      },
+    });
+    if (!contact) {
+      throw new HttpException('Contact is not found', 404);
+    }
+    return contact;
   }
 }
