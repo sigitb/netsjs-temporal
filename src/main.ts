@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const logger = app.get(WINSTON_MODULE_NEST_PROVIDER)
-  app.use(logger)
+  app.useLogger(logger);
 
   await app.listen(3000);
 }

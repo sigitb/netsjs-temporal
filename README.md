@@ -32,6 +32,9 @@ $ npm run start:prod
 $ npm run test
 ```
 
+
+## Procedures For Setting Up Nest JS & Temporal Projects
+
 ## Run Temporal
 
 ```bash
@@ -89,6 +92,24 @@ $ npx prisma generate
 - npx prisma migrate dev --name init - (Migration)
 - npx prisma generate - (Generate Prisma Client) -->
 
+## Init Temporal 
+```bash
+# Init Activity
+$ npm i @temporalio/activity
+
+# Init Client 
+$ npm i @temporalio/client
+
+# Init Cammon
+$ npm i @temporalio/common
+
+# Init Worker
+$ npm i @temporalio/worker
+
+# Init Workflow
+$ npm i @temporalio/workflow
+```
+
 ## Setup Project
 
 - Delete file
@@ -98,3 +119,6 @@ $ npx prisma generate
   - app.controller.spec.ts
 - Buat Common Module 
   - nest generate module common (digunakan untuk menyimpan module seperti prisma, logging,dll) 
+
+
+  
