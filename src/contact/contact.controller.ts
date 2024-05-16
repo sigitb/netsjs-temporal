@@ -8,11 +8,12 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ContactService } from './contact.service';
 import { Auth } from '../common/auth.decorator';
 import { User } from '@prisma/client';
-import { ContactResponse, CreateContactRequest, UpdateContactRequest } from '../model/contact.model';
+import { ContactResponse, CreateContactRequest, SearchContactRequest, UpdateContactRequest } from '../model/contact.model';
 import { WebResponse } from '../model/web.model';
 
 @Controller('/api/contacts')
@@ -30,6 +31,7 @@ export class ContactController {
       data: result,
     };
   }
+
   @Get('/:contactId')
   @HttpCode(200)
   async get(
@@ -65,6 +67,30 @@ export class ContactController {
     await this.contactService.remove(user, contactId);
     return {
       data: true,
+    };
+  }
+
+  @Get()
+  @HttpCode(200)
+  async search(
+    @Auth() user: User,
+    @Query('name') name:string,
+    @Query('email') email:string,
+    @Query('phone') phone:string,
+    @Query('page', new ParseIntPipe({optional:true})) page?:number,
+    @Query('size', new ParseIntPipe({optional:true})) size?:number,
+  ): Promise<WebResponse<ContactResponse[]>> {
+    let request: SearchContactRequest = {
+      name: name,
+      phone: phone,
+      email: email,
+      page: page || 1,
+      size:size || 10
+    }
+    const result = await this.contactService.search(user, request);
+    return {
+      data: result.data,
+      paging:result.paging
     };
   }
 }
