@@ -53,11 +53,11 @@ export class TestService {
     });
   }
 
-  async getContact(): Promise<Contact>{
+  async getContact(): Promise<Contact> {
     return await this.prismaService.contact.findFirst({
       where: {
-        username: 'test'
-      }
+        username: 'test',
+      },
     });
   }
 }

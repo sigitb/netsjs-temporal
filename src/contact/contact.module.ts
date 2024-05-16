@@ -3,7 +3,7 @@ import { ContactController } from './contact.controller';
 import { ContactService } from './contact.service';
 
 @Module({
-    controllers: [ContactController],
-    providers: [ContactService],
+  controllers: [ContactController],
+  providers: [ContactService],
 })
-export class ContactModule {};
+export class ContactModule {}

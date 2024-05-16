@@ -317,7 +317,7 @@ describe('UserController', () => {
     it('should be rejected if contact is not found', async () => {
       const contact = await testService.getContact();
       const response = await request(app.getHttpServer())
-        .put(`/api/contacts/${contact.id+1}`)
+        .put(`/api/contacts/${contact.id + 1}`)
         .set('Authorization', 'test')
         .send({
           first_name: 'test1',
@@ -332,7 +332,7 @@ describe('UserController', () => {
 
     it('should be able to update contact', async () => {
       const contact = await testService.getContact();
-      
+
       const response = await request(app.getHttpServer())
         .put(`/api/contacts/${contact.id}`)
         .set('Authorization', 'test')
@@ -501,5 +501,4 @@ describe('UserController', () => {
       expect(response.body.paging.size).toBe(1);
     });
   });
-
 });

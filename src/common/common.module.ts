@@ -7,7 +7,6 @@ import { ValidationService } from './validation.service';
 import { APP_FILTER } from '@nestjs/core';
 import { ErrorFilter } from './error.filter';
 import 'winston-daily-rotate-file';
-import * as path from 'path';
 import { AuthMiddleware } from './auth.middleware';
 
 @Global()
