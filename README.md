@@ -51,6 +51,7 @@ $ npm i zod
 
 # Type Orm Prisma
 $ npm install --save-dev prisma
+$ npm install @prisma/client
 
 # Logger File & console
 $ npm install winston

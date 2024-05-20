@@ -18,7 +18,7 @@ import {
 import { Auth } from '../common/auth.decorator';
 import { User } from '@prisma/client';
 import connection from '../temporal/configs/connection';
-import { example } from '../temporal/user/workflow';
+import { example } from '../temporal/user/workflows';
 
 @Controller('/api/users')
 export class UserController {
@@ -29,7 +29,7 @@ export class UserController {
   async test(): Promise<string> {
     const client = await connection.client();
     const handle = await client.workflow.start(example, {
-      taskQueue: 'hello-word',
+      taskQueue: 'hello-world',
       args: ['sigit'],
       workflowId: 'test',
       workflowTaskTimeout: '1m',
